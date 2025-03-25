@@ -1,7 +1,0 @@
-{
-  "component": true,
-  "styleIsolation": "isolated",
-  "usingComponents": {
-    "buy-bar": "/components/buy-bar/index"
-  }
-}

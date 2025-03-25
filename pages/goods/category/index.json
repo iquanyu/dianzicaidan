@@ -1,13 +1,12 @@
 {
-  "navigationBarTitleText": "菜品分类",
+  "navigationBarTitleText": "全部分类",
   "usingComponents": {
-    "t-loading": "tdesign-miniprogram/loading/loading",
-    "t-empty": "tdesign-miniprogram/empty/empty",
-    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-tabs": "tdesign-miniprogram/tabs/tabs",
+    "t-tab-panel": "tdesign-miniprogram/tab-panel/tab-panel",
     "t-toast": "tdesign-miniprogram/toast/toast",
-    "t-divider": "tdesign-miniprogram/divider/divider",
-    "buy-bar-container": "/components/buy-bar-container/index",
-    "buy-bar-simple-container": "/components/buy-bar-simple-container/index"
-  },
-  "enablePullDownRefresh": true
+    "t-empty": "tdesign-miniprogram/empty/empty",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "buy-bar-simple-container": "/components/buy-bar-simple-container/index",
+    "t-divider": "tdesign-miniprogram/divider/divider"
+  }
 }
