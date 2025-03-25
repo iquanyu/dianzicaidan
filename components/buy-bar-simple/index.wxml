@@ -1,0 +1,101 @@
+<view class="buy-bar {{isIPhoneX ? 'iphonex-adapt' : ''}}">
+  <!-- 左侧购物车图标和价格 -->
+  <view class="cart-area">
+    <view class="cart-icon {{cartNum > 0 ? 'active' : ''}}" bindtap="onTapCart">
+      <t-icon name="cart" size="56rpx" color="{{cartNum > 0 ? '#fff' : '#666'}}" />
+      <view class="cart-badge" wx:if="{{cartNum > 0}}">{{cartNum > 99 ? '99+' : cartNum}}</view>
+    </view>
+    <view class="price-area">
+      <block wx:if="{{cartNum > 0}}">
+        <view class="total-price">
+          <text class="price-symbol">¥</text>
+          <text class="price-value">{{totalPrice}}</text>
+        </view>
+        <view class="cart-desc">共{{cartNum}}件商品</view>
+      </block>
+      <block wx:else>
+        <view class="empty-cart">未选择菜品</view>
+      </block>
+    </view>
+  </view>
+  
+  <!-- 右侧按钮区域 -->
+  <view class="button-area">
+    <view class="add-button" bindtap="onAddToCart" wx:if="{{cartNum <= 0}}">加入购物车</view>
+    <view class="checkout-button {{cartNum > 0 ? 'active' : ''}}" bindtap="onCheckout">
+      {{cartNum > 0 ? '去结算' : (showMinPrice ? '¥' + minPrice + ' 起送' : '去结算')}}
+    </view>
+  </view>
+</view>
+
+<!-- 购物车弹出层 -->
+<t-popup
+  visible="{{cartPopupVisible}}"
+  placement="bottom"
+  bind:visible-change="onPopupChange"
+  close-btn="{{false}}"
+  prevent-scroll-through="{{false}}"
+  overlay-props="{{ {zIndex: 10999} }}"
+  z-index="{{11000}}"
+>
+  <view class="cart-popup" catch:tap>
+    <view class="popup-header">
+      <view class="popup-title">
+        <text>购物车</text>
+        <text class="popup-count" wx:if="{{cartNum > 0}}">{{cartNum}}件商品</text>
+      </view>
+      <view class="popup-clear" bindtap="clearCart">
+        <t-icon name="delete" size="32rpx" />
+        <text>清空购物车</text>
+      </view>
+    </view>
+    
+    <scroll-view class="cart-list" scroll-y>
+      <view class="empty-tip" wx:if="{{cartList.length === 0}}">
+        <t-icon name="info-circle" size="48rpx" color="#999" />
+        <text>购物车空空如也</text>
+        <view class="empty-desc">快去选购喜欢的菜品吧</view>
+      </view>
+      
+      <view class="cart-item" wx:for="{{cartList}}" wx:key="id">
+        <view class="item-main">
+          <!-- 左侧图片 -->
+          <image class="item-image" src="{{item.thumb}}" mode="aspectFill" wx:if="{{item.thumb}}"></image>
+          
+          <!-- 右侧商品信息 -->
+          <view class="item-info">
+            <!-- 商品名称 -->
+            <view class="item-name">{{item.name}}</view>
+            
+            <!-- 商品规格 -->
+            <view class="item-spec" wx:if="{{item.specText}}">{{item.specText}}</view>
+            
+            <!-- 商品价格 - 放在名称下方 -->
+            <view class="item-price">
+              <text>¥{{item.price}}</text>
+              <text class="item-total" wx:if="{{item.num > 1}}">小计: ¥{{item.price * item.num}}</text>
+            </view>
+          </view>
+          
+          <!-- 数量控制 -->
+          <view class="item-stepper">
+            <view class="stepper-button reduce {{item.num <= 1 ? 'disabled' : ''}}" bindtap="onReduceItem" data-id="{{item.id}}">
+              <t-icon name="remove" size="32rpx" />
+            </view>
+            <view class="stepper-value">{{item.num}}</view>
+            <view class="stepper-button add" bindtap="onAddItem" data-id="{{item.id}}">
+              <t-icon name="add" size="32rpx" />
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    
+    <view class="popup-footer">
+      <view class="checkout-button active" bindtap="onCheckout">去结算</view>
+    </view>
+  </view>
+</t-popup>
+
+<!-- Toast组件 -->
+<t-toast id="t-toast" /> 

@@ -1,0 +1,337 @@
+<view class="dish-detail-page">
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-skeleton theme="paragraph" animation="gradient" loading>
+      <view style="height: 750rpx; width: 100%; margin-bottom: 24rpx;"></view>
+      <view style="height: 80rpx; width: 80%; margin-bottom: 16rpx;"></view>
+      <view style="height: 60rpx; width: 90%; margin-bottom: 16rpx;"></view>
+      <view style="height: 40rpx; width: 60%; margin-bottom: 24rpx;"></view>
+      <view style="height: 100rpx; width: 100%; margin-bottom: 24rpx;"></view>
+      <view style="height: 240rpx; width: 100%"></view>
+    </t-skeleton>
+    <view class="loading-text">加载中...</view>
+  </view>
+  
+  <!-- 空状态 -->
+  <view class="empty-container" wx:elif="{{empty}}">
+    <t-empty description="菜品信息不存在" />
+    <view class="empty-tips">该菜品可能已下架，请返回查看其他菜品</view>
+    <t-button size="medium" theme="primary" bindtap="backToList" class="back-btn">返回菜品列表</t-button>
+  </view>
+  
+  <!-- 菜品详情 -->
+  <block wx:else>
+    <!-- 菜品图片轮播 -->
+    <t-swiper
+      wx:if="{{details.images && details.images.length > 0}}"
+      height="750rpx"
+      current="{{current}}"
+      autoplay="{{autoplay}}"
+      duration="{{duration}}"
+      interval="{{interval}}"
+      navigation="{{navigation}}"
+      list="{{details.images}}"
+      bind:click="showCurImg"
+      class="dish-swiper"
+      image-props="{{ {shape: 'round', loading: 'lazy'} }}"
+    ></t-swiper>
+    <view wx:else class="dish-default-img">
+      <t-image src="{{details.thumb || details.primaryImage || '/pages/goods/assets/images/dish-placeholder.png'}}" mode="aspectFill" loading="{{true}}" shape="round" />
+    </view>
+    
+    <!-- 菜品基本信息卡片 -->
+    <view class="dish-info">
+      <!-- 菜品标题和分享 -->
+      <view class="dish-title-row">
+        <view class="dish-name">{{details.title || details.name}}</view>
+        <view class="dish-share">
+          <button open-type="share" class="share-btn" hover-class="share-btn-hover">
+            <view class="btn-icon">
+              <t-icon name="share" size="36rpx" color="#666" />
+              <text class="share-text">分享</text>
+            </view>
+          </button>
+        </view>
+      </view>
+      
+      <!-- 菜品价格和评分 -->
+      <view class="dish-price-row">
+        <view class="dish-price">
+          <text class="price-symbol">¥</text>
+          <text class="price-integer">{{details.price/100}}</text>
+          <text class="price-original" wx:if="{{details.originalPrice && details.originalPrice > details.price}}">¥{{details.originalPrice/100}}</text>
+        </view>
+        <view class="dish-sales">
+          <text class="sales-count" wx:if="{{details.soldNum}}">已售 {{details.soldNum}}</text>
+          <text class="stock-count" wx:if="{{details.stock_quantity}}">库存 {{details.stock_quantity}}</text>
+          <view class="dish-rating" wx:if="{{details.rating}}">
+            <t-rate value="{{details.rating}}" size="12" gap="2" color="{{['#FFD21D', '#ddd']}}" />
+          </view>
+        </view>
+      </view>
+      
+      <!-- 菜品标签 -->
+      <view class="dish-tags" wx:if="{{details.tags && details.tags.length > 0 || details.spicyLevel > 0 || details.cookingTime > 0 || details.recommendation >= 4}}">
+        <text class="tag" wx:for="{{details.tags}}" wx:key="*this">{{item}}</text>
+        <text class="tag cooking-time" wx:if="{{details.cookingTime}}">制作时间 {{details.cookingTime}}分钟</text>
+        <text class="tag spicy-level" wx:if="{{details.spicyLevel}}">辣度 
+          <text class="spicy-icon" wx:for="{{details.spicyLevel}}" wx:key="*this">🌶</text>
+        </text>
+        <text class="tag recommend" wx:if="{{details.recommendation >= 4}}">推荐指数 {{details.recommendation}}</text>
+      </view>
+      
+      <!-- 简要营养信息 -->
+      <view class="nutrition-brief" wx:if="{{details.nutrition}}">
+        <view class="nutrition-item" wx:if="{{details.nutrition.calories}}">
+          <text class="nutrition-value">{{details.nutrition.calories}}</text>
+          <text class="nutrition-label">热量(kcal)</text>
+        </view>
+        <view class="nutrition-item" wx:if="{{details.nutrition.protein}}">
+          <text class="nutrition-value">{{details.nutrition.protein}}g</text>
+          <text class="nutrition-label">蛋白质</text>
+        </view>
+        <view class="nutrition-item" wx:if="{{details.nutrition.carbs}}">
+          <text class="nutrition-value">{{details.nutrition.carbs}}g</text>
+          <text class="nutrition-label">碳水</text>
+        </view>
+        <view class="nutrition-item" wx:if="{{details.nutrition.fat}}">
+          <text class="nutrition-value">{{details.nutrition.fat}}g</text>
+          <text class="nutrition-label">脂肪</text>
+        </view>
+      </view>
+      
+      <!-- 菜品描述 -->
+      <view class="dish-desc">{{details.description || details.desc || '暂无菜品描述'}}</view>
+    </view>
+    
+    <!-- 规格选择 -->
+    <view class="specs-section" wx:if="{{details.specList && details.specList.length > 0}}">
+      <view class="section-title">
+        <text class="title-icon"></text>
+        <text class="title-text">规格选择</text>
+      </view>
+      <view class="specs-list">
+        <view class="specs-item" wx:for="{{details.specList}}" wx:key="specId">
+          <view class="specs-name">{{item.title || item.specName}}</view>
+          <view class="specs-values">
+            <view 
+              class="spec-value {{selectedSpecs[item.specId] === specValue.specValueId ? 'selected' : ''}}" 
+              wx:for="{{item.specValueList}}" 
+              wx:for-item="specValue" 
+              wx:key="specValueId" 
+              data-spec-id="{{item.specId}}"
+              data-spec-value-id="{{specValue.specValueId}}"
+              data-spec-value="{{specValue.specValue}}"
+              bindtap="handleSpecsClick"
+            >
+              {{specValue.specValue}}
+              <text wx:if="{{specValue.price_adjust > 0}}" class="price-adjust">+¥{{specValue.price_adjust/100}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 菜品详情 -->
+    <view class="details-section">
+      <view class="section-title">
+        <text class="title-icon"></text>
+        <text class="title-text">菜品详情</text>
+      </view>
+      <view class="details-content">
+        <!-- 菜品特点 -->
+        <view class="details-item" wx:if="{{details.features && details.features.length > 0}}">
+          <view class="item-title">菜品特点</view>
+          <view class="item-content feature-list">
+            <view class="feature-item" wx:for="{{details.features}}" wx:key="*this">
+              <t-icon name="check-circle-filled" size="32rpx" color="#8B572A" />
+              <text class="feature-text">{{item}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 菜品原料 -->
+        <view class="details-item" wx:if="{{details.ingredients && details.ingredients.length > 0}}">
+          <view class="item-title">主要原料</view>
+          <view class="item-content">{{details.ingredients.join('、')}}</view>
+        </view>
+        
+        <!-- 营养成分详情 -->
+        <view class="details-item" wx:if="{{details.nutrition}}">
+          <view class="item-title">营养成分</view>
+          <view class="item-content nutrition-detail-list">
+            <view class="nutrition-detail-item" wx:if="{{details.nutrition.calories}}">
+              <text class="nutrition-name">热量</text>
+              <text class="nutrition-value">{{details.nutrition.calories}} 千卡</text>
+            </view>
+            <view class="nutrition-detail-item" wx:if="{{details.nutrition.protein}}">
+              <text class="nutrition-name">蛋白质</text>
+              <text class="nutrition-value">{{details.nutrition.protein}} 克</text>
+            </view>
+            <view class="nutrition-detail-item" wx:if="{{details.nutrition.carbs}}">
+              <text class="nutrition-name">碳水化合物</text>
+              <text class="nutrition-value">{{details.nutrition.carbs}} 克</text>
+            </view>
+            <view class="nutrition-detail-item" wx:if="{{details.nutrition.fat}}">
+              <text class="nutrition-name">脂肪</text>
+              <text class="nutrition-value">{{details.nutrition.fat}} 克</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 推荐搭配 -->
+        <view class="details-item" wx:if="{{details.recommendations && details.recommendations.length > 0}}">
+          <view class="item-title">推荐搭配</view>
+          <view class="item-content">{{details.recommendations.join('、')}}</view>
+        </view>
+        
+        <!-- 制作工艺 -->
+        <view class="details-item" wx:if="{{details.cookingMethod}}">
+          <view class="item-title">制作工艺</view>
+          <view class="item-content">{{details.cookingMethod}}</view>
+        </view>
+        
+        <!-- 食用建议 -->
+        <view class="details-item" wx:if="{{details.eatingTips}}">
+          <view class="item-title">食用建议</view>
+          <view class="item-content">{{details.eatingTips}}</view>
+        </view>
+        
+        <!-- 详细描述 -->
+        <view class="details-item" wx:if="{{details.detail}}">
+          <view class="item-title">详细描述</view>
+          <rich-text nodes="{{details.detail}}" class="item-content"></rich-text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 菜品评价 -->
+    <view class="comments-section">
+      <view class="section-title">
+        <text class="title-icon"></text>
+        <text class="title-text">菜品评价</text>
+        <view class="view-all" bindtap="navToCommentsListPage">
+          <text>{{details.comments && (details.comments.total > 0 || details.comments.topComments.length > 0) ? '查看全部' : '写评价'}}</text>
+          <t-icon name="chevron-right" size="32rpx" color="#888" />
+        </view>
+      </view>
+      
+      <!-- 有评论时显示评论列表 -->
+      <view class="comments-list" wx:if="{{details.comments && details.comments.topComments && details.comments.topComments.length > 0 || commentsList && commentsList.length > 0}}">
+        <!-- 使用details.comments.topComments -->
+        <block wx:if="{{details.comments && details.comments.topComments && details.comments.topComments.length > 0}}">
+          <view class="comment-item" wx:for="{{details.comments.topComments}}" wx:key="index">
+            <view class="comment-user">
+              <t-image class="user-avatar" src="{{item.avatar}}" shape="circle" />
+              <view class="user-info">
+                <view class="user-name">{{item.userName}}</view>
+                <view class="comment-time">{{item.createTime}}</view>
+              </view>
+              <t-rate value="{{item.rating}}" size="12" gap="2" color="{{['#FFD21D', '#ddd']}}" />
+            </view>
+            <view class="comment-content">{{item.content}}</view>
+            <view class="comment-images" wx:if="{{item.images && item.images.length > 0}}">
+              <t-image 
+                wx:for="{{item.images}}" 
+                wx:for-item="img" 
+                wx:key="*this" 
+                class="comment-image" 
+                src="{{img}}" 
+                mode="aspectFill" 
+                bindtap="previewImage" 
+                data-urls="{{item.images}}" 
+                data-current="{{img}}"
+              />
+            </view>
+          </view>
+        </block>
+        
+        <!-- 使用commentsList -->
+        <block wx:elif="{{commentsList && commentsList.length > 0}}">
+          <view class="comment-item" wx:for="{{commentsList}}" wx:key="index">
+            <view class="comment-user">
+              <t-image class="user-avatar" src="{{item.avatar || item.user_avatar || '/pages/goods/assets/images/avatar-placeholder.png'}}" shape="circle" />
+              <view class="user-info">
+                <view class="user-name">{{item.userName || item.user_name || '匿名用户'}}</view>
+                <view class="comment-time">{{item.createTime || item.create_time || ''}}</view>
+              </view>
+              <t-rate value="{{item.rating || 5}}" size="12" gap="2" color="{{['#FFD21D', '#ddd']}}" />
+            </view>
+            <view class="comment-content">{{item.content || ''}}</view>
+            <view class="comment-images" wx:if="{{item.images && item.images.length > 0}}">
+              <t-image 
+                wx:for="{{item.images}}" 
+                wx:for-item="img" 
+                wx:key="*this" 
+                class="comment-image" 
+                src="{{img}}" 
+                mode="aspectFill" 
+                bindtap="previewImage" 
+                data-urls="{{item.images}}" 
+                data-current="{{img}}"
+              />
+            </view>
+          </view>
+        </block>
+      </view>
+      
+      <!-- 无评论时显示提示 -->
+      <view class="no-comments" wx:else>
+        <view class="no-comments-icon">
+          <t-icon name="chat" size="60rpx" color="#cccccc" />
+        </view>
+        <view class="no-comments-text">暂无评价</view>
+        <view class="no-comments-tips">成为第一个评价这道菜的人吧</view>
+        <t-button size="small" theme="light" bindtap="navToCommentsListPage" class="write-comment-btn">写评价</t-button>
+      </view>
+    </view>
+    
+    <!-- 相关推荐 -->
+    <view class="recommend-section" wx:if="{{details.related_dishes && details.related_dishes.length > 0 || recommendList && recommendList.length > 0}}">
+      <view class="section-title">
+        <text class="title-icon"></text>
+        <text class="title-text">相关推荐</text>
+      </view>
+      <scroll-view class="recommend-list" scroll-x="true" enhanced="true" show-scrollbar="false">
+        <block wx:if="{{details.related_dishes && details.related_dishes.length > 0}}">
+          <view class="recommend-item" wx:for="{{details.related_dishes}}" wx:key="id" bindtap="goToDishDetail" data-id="{{item.spuId || item.dishId}}">
+            <t-image class="recommend-image" src="{{item.thumb || '/pages/goods/assets/images/dish-placeholder.png'}}" mode="aspectFill" />
+            <view class="recommend-name">{{item.title}}</view>
+            <view class="recommend-price">¥{{item.price/100}}</view>
+          </view>
+        </block>
+        <block wx:else>
+          <view class="recommend-item" wx:for="{{recommendList}}" wx:key="id" bindtap="goToDishDetail" data-id="{{item.spuId || item.dishId}}">
+            <t-image class="recommend-image" src="{{item.thumb || item.primaryImage || '/pages/goods/assets/images/dish-placeholder.png'}}" mode="aspectFill" />
+            <view class="recommend-name">{{item.title || item.name}}</view>
+            <view class="recommend-price">¥{{item.price/100}}</view>
+          </view>
+        </block>
+      </scroll-view>
+    </view>
+    
+    <!-- 底部空白区域，确保内容不被底部导航栏遮挡 -->
+    <view class="detail-content-padding"></view>
+  </block>
+  
+  <!-- 底部操作区 -->
+  <view class="category-bottom-bar {{isIPhoneX ? 'isIPhoneX' : ''}}" style="position: fixed; bottom: 0; left: 0; right: 0; width: 100%; z-index: 100;">
+    <buy-bar-simple-container
+      id="buy-bar"
+      cartNum="{{cartNum}}"
+      totalPrice="{{cartTotalPrice}}"
+      cartList="{{cartList}}"
+      showMinPrice="{{false}}"
+      isIPhoneX="{{isIPhoneX}}"
+      bind:toAddCart="toAddCart"
+      bind:toBuyNow="buyItNow"
+      bind:fetchCartList="fetchCartList"
+      bind:clearCart="clearCart"
+      bind:updateCartItem="updateCartItem"
+      class="buy-bar-component"
+    />
+  </view>
+</view>
+
+<!-- 提示组件 -->
+<t-toast id="t-toast" />

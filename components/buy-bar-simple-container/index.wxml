@@ -1,0 +1,20 @@
+<view class="buy-bar-simple-container">
+  <buy-bar-simple
+    cartNum="{{cartNum}}"
+    totalPrice="{{totalPrice}}"
+    cartList="{{cartList}}"
+    showMinPrice="{{showMinPrice}}"
+    minPrice="{{minPrice}}"
+    isIPhoneX="{{isIPhoneX}}"
+    bind:toAddCart="onToAddCart"
+    bind:toBuyNow="onToBuyNow"
+    bind:fetchCartList="onFetchCartList"
+    bind:clearCart="onClearCart"
+    bind:updateCartItem="onUpdateCartItem"
+  ></buy-bar-simple>
+  
+  <!-- 底部留白，为浮动购物车腾出空间 -->
+  <view class="bottom-space"></view>
+  
+  <t-toast id="t-toast" />
+</view> 

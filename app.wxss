@@ -1,0 +1,63 @@
+@import 'style/iconfont.wxss';
+
+@import 'style/theme.wxss';
+
+/* 颜色系统定义 */
+page {
+  --td-brand-color: #FA550F;
+  --td-brand-color-light: rgba(250, 85, 15, 0.1);
+  --td-brand-color-active: #E64D0A;
+  --td-brand-color-disabled: rgba(250, 85, 15, 0.4);
+  --td-brown-color: #8B572A;
+  --td-brown-color-light: rgba(139, 87, 42, 0.1);
+  --td-warn-color: #FB9057;
+  --td-warn-color-light: rgba(251, 144, 87, 0.1);
+  --td-gray-color-1: #333333;
+  --td-gray-color-2: #666666;
+  --td-gray-color-3: #999999;
+  --td-gray-color-4: #f5f5f5;
+  --td-gray-color-5: #f0f0f0;
+}
+
+/* 全局样式设置 */
+.t-popup {
+  z-index: 11000 !important;
+}
+
+.t-popup__content {
+  z-index: 11000 !important;
+}
+
+/* 弹出层遮罩样式覆盖 */
+.t-popup__mask {
+  z-index: 10999 !important;
+}
+
+/* 确保遮罩不会阻挡内容层的点击事件 */
+.t-popup--show {
+  pointer-events: auto !important;
+}
+
+.t-popup__content view,
+.t-popup__content text,
+.t-popup__content button,
+.t-popup__content image,
+.t-popup__content scroll-view {
+  pointer-events: auto !important;
+}
+
+/* 购物车弹出样式统一 */
+.category-bottom-bar {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 100 !important;
+}
+
+/* 购物车组件统一样式 */
+.buy-bar-component {
+  position: relative !important;
+  z-index: 101 !important;
+}

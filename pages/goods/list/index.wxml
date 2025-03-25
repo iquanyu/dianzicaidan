@@ -1,0 +1,66 @@
+<view class="dishes-list-container">
+  <!-- 过滤组件 -->
+  <filter
+    bind:change="handleFilterChange"
+    layout="{{layout}}"
+    sorts="{{sorts}}"
+    overall="{{overall}}"
+  />
+  
+  <!-- 价格输入弹窗 -->
+  <filter-popup
+    show="{{show}}"
+    bind:showFilterPopup="showFilterPopup"
+    bind:closeFilterPopup="closeFilterPopup"
+    bind:reset="reset"
+    bind:confirm="confirm"
+  >
+    <view class="price-input-wrapper">
+      <view class="price-range">价格区间</view>
+      <view class="price-input">
+        <t-input
+          class="min"
+          value="{{minVal}}"
+          layout="vertical"
+          placeholder="￥"
+          data-key="minVal"
+          align="center"
+          type="number"
+          bindinput="inputPrice"
+        />
+        <view class="line"></view>
+        <t-input
+          class="max"
+          value="{{maxVal}}"
+          layout="vertical"
+          placeholder="￥"
+          data-key="maxVal"
+          align="center"
+          type="number"
+          bindinput="inputPrice"
+        />
+      </view>
+    </view>
+  </filter-popup>
+  
+  <!-- 无结果提示 -->
+  <view class="empty-wrapper" wx:if="{{goodsList.length === 0 && hasLoaded}}">
+    <t-empty
+      t-class="empty-tips"
+      size="240rpx"
+      description="{{emptyInfo.tip || '暂无相关菜品'}}"
+    />
+  </view>
+  
+  <!-- 菜品列表 -->
+  <view class="goods-list-wrapper" wx:if="{{goodsList.length}}">
+    <goods-list
+      wr-class="goods-list-container"
+      goodsList="{{goodsList}}"
+      bind:click="gotoGoodsDetail"
+      bind:addcart="handleAddCart"
+    />
+    <load-more list-is-empty="{{!goodsList.length}}" status="{{loadMoreStatus}}" bind:retry="onReTry" />
+  </view>
+</view>
+<t-toast id="t-toast" />

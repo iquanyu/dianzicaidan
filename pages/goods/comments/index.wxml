@@ -1,0 +1,84 @@
+<view class="comments-page">
+	<!-- 评论统计和筛选条件 -->
+	<view class="comments-header">
+		<t-tag t-class="comments-header-tag {{commentType === '' ? 'comments-header-active' : ''}}" data-commentType="" bindtap="changeTag">
+			全部({{countObj.commentCount}})
+		</t-tag>
+		<t-tag
+		  t-class="comments-header-tag {{commentType === '5' ? 'comments-header-active' : ''}}"
+		  wx:if="{{isLoggedIn && countObj.uidCount !== '0'}}"
+		  data-commentType="5"
+		  bindtap="changeTag"
+		>
+			自己({{countObj.uidCount}})
+		</t-tag>
+		<t-tag t-class="comments-header-tag {{commentType === '4' ? 'comments-header-active' : ''}}" data-commentType="4" bindtap="changeTag">
+			带图({{countObj.hasImageCount}})
+		</t-tag>
+		<t-tag t-class="comments-header-tag {{commentType === '3' ? 'comments-header-active' : ''}}" data-commentType="3" bindtap="changeTag">
+			好评({{countObj.goodCount}})
+		</t-tag>
+		<t-tag t-class="comments-header-tag {{commentType === '2' ? 'comments-header-active' : ''}}" data-commentType="2" bindtap="changeTag">
+			中评({{countObj.middleCount}})
+		</t-tag>
+		<t-tag t-class="comments-header-tag {{commentType === '1' ? 'comments-header-active' : ''}}" data-commentType="1" bindtap="changeTag">
+			差评({{countObj.badCount}})
+		</t-tag>
+	</view>
+
+	<!-- 评论总体评分 -->
+	<view class="comments-summary" wx:if="{{averageRating > 0}}">
+		<view class="rating-box">
+			<view class="rating-score">{{averageRating}}</view>
+			<view class="rating-stars">
+				<t-rate value="{{averageRating}}" size="24" color="{{['#FFD21D', '#ddd']}}" />
+			</view>
+			<view class="good-rate">好评率 {{goodRate * 100}}%</view>
+		</view>
+	</view>
+
+	<!-- 评论列表 -->
+	<view class="comments-card-list">
+		<t-loading theme="dots" size="40rpx" class="loading-center" wx:if="{{pageLoading}}" />
+		
+		<block wx:if="{{!pageLoading && commentList.length > 0}}">
+			<block wx:for="{{commentList}}" wx:key="index">
+				<comments-card
+				  commentScore="{{item.commentScore}}"
+				  userName="{{item.userName}}"
+				  commentResources="{{item.commentResources || []}}"
+				  commentContent="{{item.commentContent}}"
+				  isAnonymity="{{item.isAnonymity}}"
+				  commentTime="{{item.commentTime}}"
+				  isAutoComment="{{item.isAutoComment}}"
+				  userHeadUrl="{{item.userHeadUrl}}"
+				  specInfo="{{item.specInfo}}"
+				  sellerReply="{{item.sellerReply || ''}}"
+				  goodsDetailInfo="{{item.goodsDetailInfo || ''}}"
+				/>
+			</block>
+			<t-load-more
+			  t-class="no-more"
+			  status="{{loadMoreStatus}}"
+			  no-more-text="没有更多了"
+			  color="#BBBBBB"
+			  failedColor="#FA550F"
+			/>
+		</block>
+		
+		<!-- 没有评论时显示 -->
+		<view class="empty-comments" wx:if="{{!pageLoading && commentList.length === 0}}">
+			<image class="empty-image" src="/pages/goods/assets/images/empty-comment.png" mode="aspectFit"></image>
+			<view class="empty-text">暂无相关评价</view>
+			<t-button wx:if="{{isLoggedIn}}" size="medium" theme="primary" bindtap="goToWriteComment">写评价</t-button>
+		</view>
+	</view>
+
+	<!-- 底部悬浮按钮 -->
+	<view class="float-btn-area {{isIPhoneX ? 'float-btn-area-iphonex' : ''}}" wx:if="{{isLoggedIn}}">
+		<view class="float-btn-wrapper">
+			<t-button size="large" theme="primary" icon="edit" bindtap="goToWriteComment">写评价</t-button>
+		</view>
+	</view>
+</view>
+

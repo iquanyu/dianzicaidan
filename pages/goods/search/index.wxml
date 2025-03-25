@@ -1,0 +1,136 @@
+<!-- 搜索页面 -->
+<view class="search-page">
+  <!-- 头部搜索区域 -->
+  <view class="search-header">
+    <t-search
+      value="{{searchValue}}"
+      center
+      placeholder="搜索菜品"
+      bind:change="onSearchChange"
+      bind:clear="onClearSearch"
+      bind:confirm="onSearchConfirm"
+      focus
+      clearable
+    />
+    <view class="search-btn" bindtap="onBack">取消</view>
+  </view>
+
+  <!-- 搜索历史 -->
+  <view class="search-history" wx:if="{{!isSearching && searchHistory.length > 0}}">
+    <view class="history-header">
+      <text class="history-title">搜索历史</text>
+      <t-icon name="delete" size="44rpx" color="#999" bindtap="clearHistory" />
+    </view>
+    <view class="history-list">
+      <view 
+        class="history-item" 
+        wx:for="{{searchHistory}}" 
+        wx:key="*this"
+        bindtap="onHistoryTap"
+        data-keyword="{{item}}"
+      >
+        <t-icon name="time" size="36rpx" color="#BBBBBB" />
+        <text class="history-text">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 热门搜索 -->
+  <view class="hot-search" wx:if="{{!isSearching && hotKeywords.length > 0}}">
+    <view class="hot-title">热门搜索</view>
+    <view class="hot-list">
+      <t-tag
+        wx:for="{{hotKeywords}}"
+        wx:key="*this"
+        class="hot-item"
+        size="medium"
+        variant="light-outline"
+        bindtap="onHotKeywordTap"
+        data-keyword="{{item}}"
+      >{{item}}</t-tag>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <t-loading 
+    class="loading-container" 
+    theme="circular" 
+    size="52rpx" 
+    loading="{{loading}}" 
+    text="搜索中..." 
+    t-class-text="loading-text"
+    wx:if="{{loading}}"
+  />
+
+  <!-- 搜索结果列表 -->
+  <view class="search-result" wx:if="{{isSearching && !loading}}">
+    <!-- 没有结果 -->
+    <t-empty 
+      wx:if="{{searchResults.length === 0}}"
+      icon="info-circle-filled" 
+      description="没有找到相关菜品" 
+    />
+
+    <!-- 结果列表 -->
+    <view class="dish-list" wx:else>
+      <view 
+        wx:for="{{searchResults}}" 
+        wx:key="id" 
+        class="dish-card"
+        hover-class="card-hover"
+        hover-stay-time="150"
+        data-item="{{item}}"
+        bindtap="onDishTap"
+      >
+        <image class="dish-image" src="{{item.thumb || item.primaryImage}}" mode="aspectFill"></image>
+        <view class="dish-info">
+          <view class="dish-name">{{item.name || item.title}}</view>
+          <view class="dish-desc" wx:if="{{item.description}}">{{item.description}}</view>
+          
+          <view class="dish-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+            <t-tag 
+              wx:for="{{item.tags}}" 
+              wx:for-item="tag" 
+              wx:key="*this"
+              variant="light"
+              theme="primary"
+              size="small"
+              class="dish-tag"
+            >{{tag}}</t-tag>
+          </view>
+          
+          <view class="dish-bottom">
+            <!-- 价格和添加按钮放在同一行 -->
+            <view class="dish-price-action">
+              <!-- 价格 -->
+              <view class="dish-price">
+                <text class="price-symbol">¥</text>
+                <text class="price-integer">{{item.price/100}}</text>
+                <text class="price-original" wx:if="{{item.originalPrice}}">¥{{item.originalPrice/100}}</text>
+              </view>
+              
+              <!-- 添加按钮 -->
+              <view class="dish-action">
+                <t-icon 
+                  class="add-cart-icon" 
+                  prefix="wr" 
+                  name="cartAdd" 
+                  size="44rpx" 
+                  color="#FA550F" 
+                  catchtap="onAddToCart" 
+                  data-item="{{item}}"
+                />
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 底部提示 -->
+    <t-divider content="已经到底啦" wx:if="{{searchResults.length > 0}}" />
+  </view>
+
+  <!-- Toast提示 -->
+  <t-toast id="t-toast" />
+</view>

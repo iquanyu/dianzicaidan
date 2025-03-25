@@ -1,0 +1,81 @@
+<view class="flex soldout flex-center wr-sold-out" wx:if="{{soldout || !isStock}}">
+	{{soldout ? '菜品已下架' : '菜品已售罄'}}
+</view>
+<view class="footer-cont flex flex-between wr-class">
+	<!-- 左侧区域：购物车图标和总价 -->
+	<view class="cart-price-area">
+		<view class="cart-icon {{shopCartNum > 0 ? 'cart-icon-has-goods' : ''}}" bindtap="onTapCart">
+			<t-icon name="cart" size="48rpx" color="{{shopCartNum > 0 ? '#fff' : '#666'}}" />
+			<view class="cart-count" wx:if="{{shopCartNum > 0}}">{{shopCartNum > 99 ? '99+' : shopCartNum}}</view>
+		</view>
+		<view class="price-area {{shopCartNum > 0 ? 'price-area-active' : ''}}">
+			<view class="total-price" wx:if="{{shopCartNum > 0}}">
+				<text class="price-symbol">¥</text>
+				<text class="price-integer">{{minDiscountPrice || minSalePrice || '0.00'}}</text>
+			</view>
+			<view class="price-desc" wx:else>未选购商品</view>
+		</view>
+	</view>
+	
+	<!-- 右侧区域：加入购物车和结算按钮 -->
+	<view class="action-area">
+		<view 
+			class="btn-add-cart {{soldout || !isStock || shopCartNum > 0 ? 'btn-disabled' : ''}}" 
+			bindtap="toAddCart"
+			wx:if="{{shopCartNum === 0}}"
+		>
+			加入购物车
+		</view>
+		<view 
+			class="btn-checkout {{soldout || !isStock ? 'btn-disabled' : 'btn-active'}}" 
+			bindtap="toBuyNow"
+		>
+			{{shopCartNum > 0 ? '去结算' : '¥' + (minDiscountPrice || minSalePrice || '0.00') + ' 起送'}}
+		</view>
+	</view>
+</view>
+
+<!-- 购物车菜品列表弹出层 -->
+<t-popup
+  visible="{{cartPopupVisible}}"
+  placement="bottom"
+  bind:visible-change="onPopupVisibleChange"
+  custom-style="height: auto; max-height: 70vh;"
+  bind:overlay-click="closeCartPopup"
+>
+  <view class="cart-popup">
+    <view class="cart-header">
+      <view class="cart-title">购物车</view>
+      <view class="cart-clear" bindtap="clearCart">
+        <t-icon name="delete" size="36rpx" />
+        <text>清空购物车</text>
+      </view>
+    </view>
+    
+    <scroll-view scroll-y="true" class="cart-dish-list">
+      <view wx:if="{{cartList.length === 0}}" class="cart-empty">
+        <t-icon name="cart" size="64rpx" color="#999" />
+        <view class="empty-text">购物车空空如也</view>
+      </view>
+      <view class="cart-dish-item" wx:for="{{cartList}}" wx:key="id">
+        <view class="dish-info">
+          <view class="dish-name">{{item.name}}</view>
+          <view class="dish-spec" wx:if="{{item.specText}}">{{item.specText}}</view>
+        </view>
+        <view class="dish-price">¥{{item.price}}</view>
+        <view class="dish-stepper">
+          <view class="stepper-minus" bindtap="onCartItemReduce" data-id="{{item.id}}">
+            <text>-</text>
+          </view>
+          <view class="stepper-num">{{item.num}}</view>
+          <view class="stepper-plus" bindtap="onCartItemAdd" data-id="{{item.id}}">
+            <text>+</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</t-popup>
+
+<t-toast id="t-toast" />
+

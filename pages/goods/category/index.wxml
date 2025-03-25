@@ -1,0 +1,177 @@
+<!-- 菜品分类页面 -->
+<view class="menu-page" style="display: flex; flex-direction: column; height: 100vh; overflow: hidden;">
+  <!-- 顶部搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input" bindtap="onTapSearch">
+      <t-icon name="search" size="40rpx" color="#999" />
+      <text class="search-placeholder">搜索菜品</text>
+    </view>
+  </view>
+
+  <!-- 店铺信息卡片 -->
+  <view class="shop-info-card">
+    <view class="shop-info-content">
+      <image class="shop-logo" src="{{shopInfo.logo}}" mode="aspectFill"></image>
+      <view class="shop-detail">
+        <view class="shop-name">{{shopInfo.name || '美味餐厅'}}</view>
+        <view class="shop-desc">
+          <view class="rating-container">
+            <text class="shop-rating">{{shopInfo.rating || '4.8'}}</text>
+            <t-rate value="{{shopInfo.rating || 4.8}}" size="12" variant="filled" color="#FF9C19" />
+          </view>
+          <text class="shop-time">营业时间: {{shopInfo.businessHours || '10:00-22:00'}}</text>
+        </view>
+        <view class="shop-address" bindtap="openLocation">
+          <t-icon name="location" size="32rpx" color="#999" />
+          <text>{{shopInfo.address || '点击查看地址'}}</text>
+          <t-icon name="chevron-right" size="28rpx" color="#BBBBBB" />
+        </view>
+      </view>
+    </view>
+    <view class="shop-info-notice" wx:if="{{shopInfo.notice}}">
+      <t-icon name="notification" size="32rpx" color="#ff9c19" />
+      <text class="notice-text">{{shopInfo.notice}}</text>
+    </view>
+  </view>
+
+  <!-- 菜单内容区域 -->
+  <view class="menu-content" style="display: flex; flex: 1; width: 100%; overflow: hidden; height: 0; padding-bottom: {{isIPhoneX ? '120rpx' : '100rpx'}};">
+    <!-- 左侧分类列表 -->
+    <scroll-view class="category-list" scroll-y="{{true}}" enable-flex="{{true}}" scroll-with-animation="{{true}}" scroll-into-view="category-{{activeCategory}}">
+      <view 
+        wx:for="{{categoryList[0].children}}" 
+        wx:key="id" 
+        id="category-{{index}}"
+        class="category-item {{activeCategory === index ? 'active' : ''}}"
+        hover-class="category-hover"
+        hover-stay-time="150"
+        data-index="{{index}}"
+        data-item="{{item}}"
+        bindtap="switchCategory"
+      >
+        <view class="category-name">{{item.name}}</view>
+      </view>
+    </scroll-view>
+
+    <!-- 右侧内容 -->
+    <view class="container-right">
+      <!-- 分类标题 -->
+      <view class="category-title">
+        <view class="title-text">{{categoryTitle}}</view>
+        <view class="dish-count">{{dishCount}}个菜品</view>
+      </view>
+
+      <!-- 菜品列表容器 -->
+      <scroll-view 
+        class="dish-container" 
+        scroll-y="{{true}}"
+        enable-flex="{{true}}"
+        enhanced="{{true}}"
+        show-scrollbar="{{false}}"
+        bounces="{{true}}"
+        bindscrolltolower="onLoadMore"
+        style="flex: 1; height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;"
+      >
+        <!-- 加载中状态 -->
+        <t-loading 
+          class="loading-container" 
+          theme="circular" 
+          size="52rpx" 
+          loading="{{loading}}" 
+          text="加载中..." 
+          t-class-text="loading-text"
+        />
+
+        <!-- 空状态 -->
+        <t-empty 
+          wx:if="{{empty}}" 
+          icon="info-circle" 
+          description="该分类下暂无菜品，请看看其他分类吧" 
+        />
+
+        <!-- 菜品列表 -->
+        <block wx:if="{{!loading && !empty}}">
+          <view class="dish-list" style="padding-bottom: 140rpx;">
+            <view 
+              wx:for="{{dishList}}" 
+              wx:key="id" 
+              class="dish-card"
+              hover-class="card-hover"
+              hover-stay-time="150"
+              data-item="{{item}}"
+              bindtap="onDishTap"
+            >
+              <image class="dish-image" src="{{item.thumb || item.primaryImage}}" mode="aspectFill"></image>
+              <view class="dish-info">
+                <view class="dish-name">{{item.name || item.title}}</view>
+                <view class="dish-desc" wx:if="{{item.description}}">{{item.description}}</view>
+                
+                <view class="dish-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+                  <t-tag 
+                    wx:for="{{item.tags}}" 
+                    wx:for-item="tag" 
+                    wx:key="*this"
+                    variant="light"
+                    theme="primary"
+                    size="small"
+                    class="dish-tag"
+                  >{{tag}}</t-tag>
+                </view>
+                
+                <view class="dish-bottom">
+                  <!-- 价格和添加按钮放在同一行 -->
+                  <view class="dish-price-action">
+                    <!-- 价格 -->
+                    <view class="dish-price">
+                      <text class="price-symbol">¥</text>
+                      <text class="price-integer">{{item.price/100}}</text>
+                      <text class="price-original" wx:if="{{item.originalPrice}}">¥{{item.originalPrice/100}}</text>
+                    </view>
+                    
+                    <!-- 添加按钮 -->
+                    <view class="dish-action">
+                      <t-icon 
+                        class="add-cart-icon" 
+                        prefix="wr" 
+                        name="cartAdd" 
+                        size="44rpx" 
+                        color="#FA550F" 
+                        catchtap="onAddToCart" 
+                        data-item="{{item}}"
+                      />
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+          
+          <!-- 底部提示 -->
+          <t-divider content="已经到底啦" />
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 底部购物车条 -->
+  <view class="category-bottom-bar {{isIPhoneX ? 'isIPhoneX' : ''}}" style="position: fixed; bottom: 0; left: 0; right: 0; width: 100%; z-index: 100;">
+    <buy-bar-simple-container
+      cartNum="{{cartNum}}"
+      totalPrice="{{totalPrice}}"
+      cartList="{{cartList}}"
+      showMinPrice="{{true}}"
+      minPrice="{{15}}"
+      isIPhoneX="{{isIPhoneX}}"
+      bind:toAddCart="toAddCart"
+      bind:toBuyNow="toBuyNow"
+      bind:fetchCartList="fetchCartList"
+      bind:clearCart="clearCart"
+      bind:updateCartItem="updateCartItem"
+      class="buy-bar-component"
+    />
+  </view>
+  
+</view>
+
+<!-- Toast 提示 -->
+<t-toast id="t-toast" />

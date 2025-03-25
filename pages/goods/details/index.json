@@ -1,0 +1,18 @@
+{
+  "navigationBarTitleText": "菜品详情",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "backgroundColor": "#f5f5f5",
+  "usingComponents": {
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-empty": "tdesign-miniprogram/empty/empty",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-swiper": "tdesign-miniprogram/swiper/swiper",
+    "t-image": "tdesign-miniprogram/image/image",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-rate": "tdesign-miniprogram/rate/rate",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-skeleton": "tdesign-miniprogram/skeleton/skeleton",
+    "buy-bar-simple-container": "/components/buy-bar-simple-container/index"
+  }
+}

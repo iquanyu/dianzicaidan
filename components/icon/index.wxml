@@ -1,0 +1,24 @@
+<view 
+  class="custom-icon" 
+  style="width: {{size}}; height: {{size}};" 
+  bindtap="onClick"
+>
+  <image 
+    wx:if="{{iconMap[name]}}" 
+    src="{{iconMap[name]}}" 
+    style="width: 100%; height: 100%;" 
+  />
+  <view 
+    wx:else 
+    style="color: {{color}}; font-size: {{size}};"
+  >
+    <!-- 使用系统自带图标或Unicode图标 -->
+    <text wx:if="{{name === 'add'}}">+</text>
+    <text wx:elif="{{name === 'minus'}}">-</text>
+    <text wx:elif="{{name === 'close'}}">×</text>
+    <text wx:elif="{{name === 'success'}}">✓</text>
+    <text wx:elif="{{name === 'error'}}">✗</text>
+    <text wx:elif="{{name === 'arrow-right'}}">›</text>
+    <text wx:else>●</text>
+  </view>
+</view> 

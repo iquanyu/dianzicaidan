@@ -1,0 +1,132 @@
+/* 层级定义
+@z-index-0: 1;
+@z-index-1: 100;
+@z-index-2: 200;
+@z-index-5: 500;
+@z-index-component: 1000; // 通用组件级别
+@z-index-dropdown: @z-index-component;
+@z-index-sticky: @z-index-component + 20;
+@z-index-fixed: @z-index-component + 30;
+@z-index-modal-backdrop:@z-index-component + 40;
+@z-index-modal:@z-index-component + 50;
+@z-index-popover:@z-index-component + 60;
+@z-index-tooltip:@z-index-component + 70;
+*/
+/* var() css变量适配*/
+page {
+  background-color: #FFFFFF;
+}
+
+.comments-page {
+  padding-bottom: 120rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.comments-header {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #fff;
+  padding: 24rpx 24rpx 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.comments-header-tag {
+  margin-right: 24rpx;
+  margin-bottom: 16rpx;
+  color: #666;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  border: 2rpx solid #eee;
+}
+
+.comments-header-active {
+  background-color: #E54D42 !important;
+  color: #fff !important;
+  border: 2rpx solid #E54D42 !important;
+}
+
+.comments-summary {
+  background-color: #fff;
+  padding: 30rpx 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.rating-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.rating-score {
+  font-size: 56rpx;
+  font-weight: bold;
+  color: #333;
+  line-height: 1;
+  margin-bottom: 10rpx;
+}
+
+.rating-stars {
+  margin-bottom: 10rpx;
+}
+
+.good-rate {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.comments-card-list {
+  background-color: #fff;
+  margin-bottom: 16rpx;
+  min-height: 400rpx;
+}
+
+.loading-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx 0;
+}
+
+.empty-comments {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 0;
+}
+
+.empty-image {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 30rpx;
+}
+
+.no-more {
+  padding: 0 0 32rpx;
+}
+
+.float-btn-area {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+.float-btn-area-iphonex {
+  padding-bottom: 68rpx;
+}
+
+.float-btn-wrapper {
+  padding: 16rpx 24rpx;
+}
